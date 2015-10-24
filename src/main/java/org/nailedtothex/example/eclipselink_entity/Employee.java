@@ -1,9 +1,10 @@
 package org.nailedtothex.example.eclipselink_entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-public class Employee {
+public class Employee implements Serializable {
     @Id
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER) // default
