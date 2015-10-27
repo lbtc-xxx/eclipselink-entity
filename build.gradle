@@ -1,0 +1,35 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'org.nailedtothex.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    weaver
+}
+
+dependencies {
+    compile 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.6.1'
+    runtime 'org.apache.derby:derby:10.12.1.1'
+    weaver 'org.eclipse.persistence:org.eclipse.persistence.jpa:2.6.1'
+}
+
+jar {
+    doLast {
+        ext.woven = 'build/libs/woven.jar'
+
+        ant.taskdef(name: 'weave',
+                classname: 'org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask',
+                classpath: configurations.weaver.asPath)
+        ant.weave(source: jar.archivePath, target: woven){
+            classpath {
+                pathElement(path: configurations.compile.asPath)
+            }
+        }
+        ant.move(file: woven, tofile: jar.archivePath)
+    }
+}
